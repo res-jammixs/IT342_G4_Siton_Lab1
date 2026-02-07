@@ -35,15 +35,17 @@ public class ProfileController {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
         }
         User u = user.get();
-        return ResponseEntity.ok(Map.of(
-                "userId", u.getUserId(),
-                "firstName", u.getFirstName(),
-                "middleName", u.getMiddleName(),
-                "lastName", u.getLastName(),
-                "email", u.getEmail(),
-                "phoneNumber", u.getPhoneNumber(),
-                "isActive", u.isActive(),
-                "createdAt", u.getCreatedAt()
-        ));
+        
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("userId", u.getUserId());
+        response.put("firstName", u.getFirstName());
+        response.put("middleName", u.getMiddleName() != null ? u.getMiddleName() : "");
+        response.put("lastName", u.getLastName());
+        response.put("email", u.getEmail());
+        response.put("phoneNumber", u.getPhoneNumber() != null ? u.getPhoneNumber() : "");
+        response.put("isActive", u.isActive());
+        response.put("createdAt", u.getCreatedAt());
+        
+        return ResponseEntity.ok(response);
     }
 }
