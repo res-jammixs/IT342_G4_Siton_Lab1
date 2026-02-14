@@ -36,4 +36,4 @@ Your backend must include:
 - [ ] POST /api/auth/login
 - [ ] GET /api/user/me (protected)
 - [ ] Database connection (MySQL)
-- [ ] Password encryption (BCrypt)
+- [ ] Password encryption (BCrypt)xa
