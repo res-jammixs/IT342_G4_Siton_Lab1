@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,8 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.citu.backend.entity.User;
 import com.citu.backend.service.AuthService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @RestController
 @RequestMapping("/api/auth")
+@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -24,16 +31,31 @@ public class AuthController {
     }
 
     public static class RegisterRequest {
+        @NotBlank(message = "First name is required")
         public String firstName;
+        
         public String middleName;
+        
+        @NotBlank(message = "Last name is required")
         public String lastName;
+        
+        @NotBlank(message = "Email is required")
+        @Email(message = "Email must be valid")
         public String email;
+        
+        @NotBlank(message = "Password is required")
+        @Size(min = 6, message = "Password must be at least 6 characters")
         public String password;
+        
         public String phoneNumber;
     }
 
     public static class LoginRequest {
+        @NotBlank(message = "Email is required")
+        @Email(message = "Email must be valid")
         public String email;
+        
+        @NotBlank(message = "Password is required")
         public String password;
     }
 
@@ -42,7 +64,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         try {
             User u = authService.registerUser(req.firstName, req.middleName, req.lastName, req.email, req.password, req.phoneNumber);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("userId", u.getUserId(), "email", u.getEmail()));
@@ -52,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
         try {
             String token = authService.loginUser(req.email, req.password);
             return ResponseEntity.ok(Map.of("token", token));
